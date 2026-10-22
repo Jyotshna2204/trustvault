@@ -1,28 +1,51 @@
 import os
 
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, render_template
+from .extensions import csrf, db, login_manager
 
-load_dotenv()  # reads the .env file into environment variables
+load_dotenv()
 
 
 def create_app(test_config=None):
     app = Flask(__name__)
 
-    secret = os.environ.get("SECRET_KEY")
-    if not secret:
+    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///trustvault.db"
+    app.config["SESSION_COOKIE_HTTPONLY"] = True
+    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+    app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024  # 5 MB request limit
+
+    if test_config:
+        app.config.update(test_config)
+
+    if not app.config.get("SECRET_KEY"):
         raise RuntimeError(
             "SECRET_KEY is not set. Copy .env.example to .env and set a value."
         )
 
-    app.config["SECRET_KEY"] = secret
-    app.config["SESSION_COOKIE_HTTPONLY"] = True   # JavaScript cannot read the cookie
-    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"  # helps against forged requests
+    db.init_app(app)
+    csrf.init_app(app)
+    login_manager.init_app(app)
+    login_manager.login_view = "auth.login"
+    login_manager.session_protection = "strong"
 
-    if test_config:
-        app.config.update(test_config)  # lets our tests change settings later
-
+    from . import models  # noqa: F401  (registers the tables)
+    from .auth import auth
     from .routes import main
+
+    app.register_blueprint(auth)
     app.register_blueprint(main)
+
+    @app.errorhandler(403)
+    def forbidden(e):
+        return render_template("error.html", code=403, message="Forbidden"), 403
+
+    @app.errorhandler(404)
+    def not_found(e):
+        return render_template("error.html", code=404, message="Not found"), 404
+
+    with app.app_context():
+        db.create_all()
 
     return app

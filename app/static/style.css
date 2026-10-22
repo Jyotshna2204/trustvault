@@ -26,3 +26,41 @@ footer {
     padding: 1rem;
     color: #666;
 }
+
+header nav {
+    margin-top: 0.5rem;
+}
+
+header nav a {
+    color: white;
+    margin-right: 1rem;
+}
+
+form.inline {
+    display: inline;
+}
+
+form.inline button {
+    background: none;
+    border: 1px solid white;
+    color: white;
+    cursor: pointer;
+}
+
+.flash.error {
+    background: #fde2e2;
+    padding: 0.6rem;
+    border-radius: 4px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th,
+td {
+    border: 1px solid #ccc;
+    padding: 0.4rem;
+    text-align: left;
+}
