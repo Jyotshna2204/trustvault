@@ -1,0 +1,20 @@
+# Python junk
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Secrets - NEVER commit these
+.env
+*.env
+
+# Database and uploaded files (private data)
+*.db
+*.sqlite3
+instance/
+uploads/
+
+# Test and editor leftovers
+.pytest_cache/
+.coverage
+.vscode/
