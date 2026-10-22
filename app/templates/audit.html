@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Audit log (latest 200)</h2>
+{% if ok %}
+<p class="flash ok">Integrity check passed: the hash chain is intact.</p>
+{% else %}
+<p class="flash error">TAMPERING DETECTED: chain broken at entry {{ bad_id }}.</p>
+{% endif %}
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Time (UTC)</th>
+        <th>Who</th>
+        <th>Action</th>
+        <th>Outcome</th>
+        <th>Target</th>
+        <th>Details</th>
+    </tr>
+    {% for e in entries %}
+    <tr>
+        <td>{{ e.id }}</td>
+        <td>{{ e.timestamp }}</td>
+        <td>{{ e.actor_email or '-' }}</td>
+        <td>{{ e.action }}</td>
+        <td>{{ e.outcome }}</td>
+        <td>{{ e.target_type or '' }} {{ e.target_id or '' }}</td>
+        <td>{{ e.details }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

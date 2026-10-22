@@ -64,3 +64,9 @@ td {
     padding: 0.4rem;
     text-align: left;
 }
+
+.flash.ok {
+    background: #dff3e1;
+    padding: 0.6rem;
+    border-radius: 4px;
+}

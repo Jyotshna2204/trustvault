@@ -4,12 +4,12 @@ from flask_wtf import FlaskForm
 from werkzeug.security import check_password_hash, generate_password_hash
 from wtforms import PasswordField, StringField
 from wtforms.validators import DataRequired, Length
+
+from .audit import log_event
 from .models import User
 
 auth = Blueprint("auth", __name__)
 
-# Used so a wrong email takes about as long as a wrong password
-# (stops attackers discovering which emails exist by timing).
 _DUMMY_HASH = generate_password_hash("not-a-real-password")
 
 
@@ -35,11 +35,15 @@ def login():
             password_ok = user.check_password(form.password.data)
 
         if user and password_ok and user.active:
-            session.clear()  # start a fresh session at login
+            session.clear()
             login_user(user)
+            log_event("login", "success", "user", user.id, actor=user)
             return redirect(url_for("main.dashboard"))
 
-        # Same message for every failure: do not reveal which part was wrong.
+        # Never log the password. Log who was tried, so attacks are visible.
+        log_event("login", "failure", "user", user.id if user else None,
+                  details="bad credentials or inactive account",
+                  actor=None, actor_email=email)
         flash("Invalid email or password.", "error")
 
     return render_template("login.html", form=form)
@@ -48,6 +52,7 @@ def login():
 @auth.route("/logout", methods=["POST"])
 @login_required
 def logout():
+    log_event("logout", "success", "user", current_user.id)
     logout_user()
     session.clear()
     return redirect(url_for("main.home"))

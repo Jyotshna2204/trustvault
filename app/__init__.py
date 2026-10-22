@@ -47,5 +47,7 @@ def create_app(test_config=None):
 
     with app.app_context():
         db.create_all()
+        from .audit import install_triggers
+        install_triggers()
 
     return app
