@@ -1,14 +1,35 @@
 {% extends "base.html" %}
 {% block content %}
-  <h2>Documents</h2>
-  {% if current_user.role == 'owner' %}<p><a href="{{ url_for('docs.upload') }}">Upload</a></p>{% endif %}
-  <table>
-    <tr><th>Title</th><th>Category</th><th>Owner</th></tr>
+<h2>Documents</h2>
+<form method="get">
+    <input name="title" placeholder="Title" value="{{ request.args.get('title', '') }}">
+    <select name="category">
+        <option value="">Any category</option>
+        {% for c in ['general','contract','hr','finance','drawing','audit'] %}
+        <option {% if request.args.get('category')==c %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+    </select>
+    <input name="owner" placeholder="Owner name" value="{{ request.args.get('owner', '') }}">
+    <input name="date" type="date" value="{{ request.args.get('date', '') }}">
+    <button>Search</button>
+</form>
+{% if current_user.role == 'owner' %}<p><a href="{{ url_for('docs.upload') }}">Upload</a></p>{% endif %}
+<table>
+    <tr>
+        <th>Title</th>
+        <th>Category</th>
+        <th>Owner</th>
+    </tr>
     {% for d in docs %}
-      <tr><td><a href="{{ url_for('docs.detail', doc_id=d.id) }}">{{ d.title }}</a></td>
-          <td>{{ d.category }}</td><td>{{ d.owner.name }}</td></tr>
+    <tr>
+        <td><a href="{{ url_for('docs.detail', doc_id=d.id) }}">{{ d.title }}</a></td>
+        <td>{{ d.category }}</td>
+        <td>{{ d.owner.name }}</td>
+    </tr>
     {% else %}
-      <tr><td colspan="3">No documents.</td></tr>
+    <tr>
+        <td colspan="3">No documents.</td>
+    </tr>
     {% endfor %}
-  </table>
+</table>
 {% endblock %}

@@ -27,15 +27,31 @@ def get_doc(doc_id, action):
         abort(403)
     return doc
 
-
 @docs.route("/")
 @login_required
 def index():
     shared = db.session.query(Grant.document_id).filter_by(user_id=current_user.id)
-    items = Document.query.filter(
+    query = Document.query.filter(
         or_(Document.owner_id == current_user.id, Document.id.in_(shared))
-    ).all()
+    )
+    # Search filters are applied ON TOP of the permission filter,
+    # so search can never show a document the user may not see.
+    title = request.args.get("title", "").strip()
+    category = request.args.get("category", "").strip()
+    owner = request.args.get("owner", "").strip()
+    date = request.args.get("date", "").strip()   # format YYYY-MM-DD
+    if title:
+        query = query.filter(Document.title.ilike(f"%{title}%"))
+    if category:
+        query = query.filter(Document.category == category)
+    if owner:
+        query = query.join(User, Document.owner_id == User.id).filter(
+            User.name.ilike(f"%{owner}%"))
+    if date:
+        query = query.filter(db.func.date(Document.created_at) == date)
+    items = query.order_by(Document.created_at.desc()).all()
     return render_template("documents.html", docs=items)
+
 
 
 @docs.route("/upload", methods=["GET", "POST"])

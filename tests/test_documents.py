@@ -91,3 +91,7 @@ def test_denied_attempt_is_logged(app, make_user):
     owner2.get("/documents/1/download")
     with app.app_context():
         assert AuditLog.query.filter_by(action="read", outcome="denied").count() == 1
+def test_search_never_shows_other_peoples_documents(app, make_user):
+    owner1, owner2, _, _ = setup(app, make_user)
+    assert b"Doc1" in owner1.get("/documents/?title=Doc").data
+    assert b"Doc1" not in owner2.get("/documents/?title=Doc").data
