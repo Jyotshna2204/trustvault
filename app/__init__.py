@@ -11,7 +11,6 @@ def create_app(test_config=None):
     app = Flask(__name__)
 
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
-    os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///trustvault.db"
     app.config["SESSION_COOKIE_HTTPONLY"] = True
     app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
@@ -25,7 +24,7 @@ def create_app(test_config=None):
         raise RuntimeError(
             "SECRET_KEY is not set. Copy .env.example to .env and set a value."
         )
-
+    os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
     db.init_app(app)
     csrf.init_app(app)
     login_manager.init_app(app)
