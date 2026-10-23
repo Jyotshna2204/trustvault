@@ -35,3 +35,12 @@ def make_user(app):
 
 def login(client, email, password):
     return client.post("/login", data={"email": email, "password": password})
+@pytest.fixture
+def app(tmp_path):
+    return create_app({
+        "TESTING": True,
+        "SECRET_KEY": "test-secret",
+        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+        "WTF_CSRF_ENABLED": False,
+        "UPLOAD_FOLDER": str(tmp_path),
+    })

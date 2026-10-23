@@ -1,11 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>Audit log (latest 200)</h2>
-{% if ok %}
-<p class="flash ok">Integrity check passed: the hash chain is intact.</p>
-{% else %}
-<p class="flash error">TAMPERING DETECTED: chain broken at entry {{ bad_id }}.</p>
-{% endif %}
 <table>
     <tr>
         <th>ID</th>

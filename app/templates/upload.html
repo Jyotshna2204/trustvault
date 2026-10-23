@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Upload</h2>
+<p>Allowed: pdf, txt, png, jpg, jpeg, docx. Max 4 MB.</p>
+<form method="post" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <p>Title: <input name="title"></p>
+    <p>Category: <select name="category">
+            {% for c in ['general','contract','hr','finance','drawing','audit'] %}<option>{{ c }}</option>{% endfor %}
+        </select></p>
+    <p><input type="file" name="file"></p>
+    <button type="submit">Upload</button>
+</form>
+{% endblock %}

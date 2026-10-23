@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template
 from flask_login import current_user, login_required
-from .audit import verify_chain
 from .models import AuditLog
 from .decorators import role_required
 from .models import ROLE_ADMIN, User
@@ -27,6 +26,5 @@ def admin():
 @main.route("/admin/audit")
 @role_required(ROLE_ADMIN)
 def admin_audit():
-    ok, bad_id = verify_chain()
     entries = AuditLog.query.order_by(AuditLog.id.desc()).limit(200).all()
-    return render_template("audit.html", entries=entries, ok=ok, bad_id=bad_id)
+    return render_template("audit.html", entries=entries)

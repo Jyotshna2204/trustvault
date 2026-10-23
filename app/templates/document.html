@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ doc.title }}</h2>
+<p>Category: {{ doc.category }} | Owner: {{ doc.owner.name }} | File: {{ doc.original_filename }}</p>
+<p><a href="{{ url_for('docs.download', doc_id=doc.id) }}">Download</a></p>
+
+{% if can_edit %}
+<form method="post" action="{{ url_for('docs.edit', doc_id=doc.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input name="title" value="{{ doc.title }}"> <button>Rename</button>
+</form>
+{% endif %}
+
+{% if is_owner %}
+<form method="post" action="{{ url_for('docs.delete', doc_id=doc.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button>Delete document</button>
+</form>
+
+<h3>Who has access</h3>
+{% for g in grants %}
+<form method="post" class="inline" action="{{ url_for('docs.revoke', doc_id=doc.id, user_id=g.user_id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {{ g.user.email }} ({{ g.level }}) <button>Revoke</button>
+</form><br>
+{% else %}
+<p>Nobody else.</p>
+{% endfor %}
+
+<h3>Give access</h3>
+<form method="post" action="{{ url_for('docs.grant', doc_id=doc.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input name="email" placeholder="email">
+    <select name="level">
+        <option>read</option>
+        <option>edit</option>
+    </select>
+    <button>Grant</button>
+</form>
+{% endif %}
+{% endblock %}

@@ -55,5 +55,20 @@ class AuditLog(db.Model):
     target_type = db.Column(db.String(30), nullable=True)
     target_id = db.Column(db.Integer, nullable=True)
     details = db.Column(db.Text, nullable=True)
-    prev_hash = db.Column(db.String(64), nullable=False)
-    entry_hash = db.Column(db.String(64), nullable=False)
+class Document(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    category = db.Column(db.String(50), nullable=False)
+    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    original_filename = db.Column(db.String(255), nullable=False)
+    stored_name = db.Column(db.String(64), nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    owner = db.relationship("User")
+
+
+class Grant(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    document_id = db.Column(db.Integer, db.ForeignKey("document.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    level = db.Column(db.String(10), nullable=False)  # "read" or "edit"
+    user = db.relationship("User") 
