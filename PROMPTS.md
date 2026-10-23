@@ -28,3 +28,26 @@ instead, with a commit link.)
 - **What I did:** replaced the file with a placeholder, generated and set a new
   key in .env (the old one is treated as exposed), and now add files by name
   instead of `git add .`. Commit:.env.example
+### Entry 3 : hash chain too complex
+- Asked AI for an audit log. It produced a hash chain I could not explain.
+- Did: asked for a simpler version, kept only append-only DB triggers.
+  Commit: <link>
+
+### Entry 4 : authorisation - permission check missing from get_doc
+- Asked: for a document permission check.
+- Wrong: my test run showed 5 tests failing (strangers got 200, a revoked
+  user could still download, admin could download, denied was not logged).
+  The get_doc function was missing `not can(...)`.
+- Did: restored the check. 22 tests pass. I also removed the check on purpose
+  (mutation test) and 5 tests failed, so the tests really test authorisation.
+  Note: the broken version was committed once. Fix commit: <link>
+
+### Entry 5 : setup order bugs in app/__init__.py
+- Wrong: the instructions put UPLOAD_FOLDER and register_blueprint(docs) in
+  the wrong order, giving KeyError and UnboundLocalError.
+- Did: rewrote __init__.py in the correct order. Commit: <link>
+
+### Entry 6 : audit/auth - search variable mix-up and missing templates
+- Wrong: search code used `items` and `query` inconsistently
+  (UnboundLocalError); templates were missing (TemplateNotFound).
+- Did: fixed both, tests caught the first. Commit: <link>
