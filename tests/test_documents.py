@@ -2,7 +2,7 @@ import io
 
 from app.models import Document, User
 from tests.conftest import login
-
+from app.extensions import db
 
 def make_client(app, make_user, name, role):
     email, pw = make_user(f"{name}@x.test", role)
@@ -43,7 +43,7 @@ def test_stranger_cannot_read_download_edit_delete(app, make_user):
         assert c.post("/documents/1/delete").status_code == 403
         assert c.post("/documents/1/grant", data={"email": "viewer@x.test", "level": "edit"}).status_code == 403
     with app.app_context():
-        assert Document.query.get(1).title == "Doc1"
+        assert db.session.get(Document, 1).title == "Doc1"
 
 
 def test_read_grant_allows_download_but_not_edit(app, make_user):

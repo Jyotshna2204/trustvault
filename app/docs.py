@@ -22,7 +22,7 @@ MAX_BYTES = 4 * 1024 * 1024
 def get_doc(doc_id, action):
     """Load a document only if the user may do `action`. Otherwise log and 403."""
     doc = db.session.get(Document, doc_id)
-    if doc is None:
+    if doc is None or not can(current_user, doc, action):
         log_event(action, "denied", "document", doc_id)
         abort(403)
     return doc
