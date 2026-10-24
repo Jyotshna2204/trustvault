@@ -3,10 +3,10 @@ from app.extensions import db
 from app.models import User
 
 DEMO = [
-    ("admin@trustvault.test", "Alice Admin", "admin", "Demo-Admin-2026"),
-    ("owner1@trustvault.test", "Oscar Owner", "owner", "Demo-Owner1-2026"),
-    ("owner2@trustvault.test", "Olivia Owner", "owner", "Demo-Owner2-2026"),
-    ("viewer@trustvault.test", "Victor Viewer", "viewer", "Demo-Viewer-2026"),
+    ("admin@trustvault.test", "Jyotshna", "admin", "MyAdmin#2026"),
+    ("owner1@trustvault.test", "Ruthika", "owner", "DemoOwner1#2026"),
+    ("owner2@trustvault.test", "Sathvik", "owner", "Demo-Owner2-2026"),
+    ("viewer@trustvault.test", "Saicharan", "viewer", "Demo-Viewer-2026"),
 ]
 
 app = create_app()
