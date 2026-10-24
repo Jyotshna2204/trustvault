@@ -62,3 +62,9 @@ def test_logout_requires_post(client, make_user):
     email, pw = make_user("a@x.test", "viewer")
     login(client, email, pw)
     assert client.get("/logout").status_code == 405
+def test_register_always_creates_viewer(app, client):
+    client.post("/register", data={"name": "New", "email": "n@x.test",
+        "password": "longpass123", "confirm": "longpass123", "role": "admin"})
+    from app.models import User
+    with app.app_context():
+        assert User.query.filter_by(email="n@x.test").first().role == "viewer"

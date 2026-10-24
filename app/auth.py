@@ -7,12 +7,33 @@ from wtforms.validators import DataRequired, Length
 
 from .audit import log_event
 from .models import User
-
+from wtforms.validators import EqualTo
+from .extensions import db
 auth = Blueprint("auth", __name__)
 
 _DUMMY_HASH = generate_password_hash("not-a-real-password")
 
-
+class RegisterForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired(), Length(max=100)])
+    email = StringField("Email", validators=[DataRequired(), Length(max=255)])
+    password = PasswordField("Password", validators=[DataRequired(), Length(min=8, max=200)])
+    confirm = PasswordField("Confirm password", validators=[EqualTo("password")])
+@auth.route("/register", methods=["GET", "POST"])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        email = form.email.data.strip().lower()
+        if User.query.filter_by(email=email).first():
+            flash("That email is already registered.", "error")
+        else:
+            user = User(email=email, name=form.name.data.strip(), role="viewer")  # role is fixed, never from the form
+            user.set_password(form.password.data)
+            db.session.add(user)
+            db.session.commit()
+            log_event("register", "success", "user", user.id, actor=user)
+            flash("Account created. Please log in.", "ok")
+            return redirect(url_for("auth.login"))
+    return render_template("register.html", form=form)
 class LoginForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Length(max=255)])
     password = PasswordField("Password", validators=[DataRequired(), Length(max=200)])

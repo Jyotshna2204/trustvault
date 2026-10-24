@@ -15,6 +15,8 @@ def create_app(test_config=None):
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///trustvault.db"
     app.config["SESSION_COOKIE_HTTPONLY"] = True
     app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+        # On the live site (HTTPS) the cookie is only sent over HTTPS
+    app.config["SESSION_COOKIE_SECURE"] = os.environ.get("PRODUCTION") == "1"
     app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024  # 5 MB request limit
     app.config["UPLOAD_FOLDER"] = os.path.join(os.path.dirname(app.root_path), "uploads")
 
