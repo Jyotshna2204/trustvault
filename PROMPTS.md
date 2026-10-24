@@ -51,3 +51,7 @@ instead, with a commit link.)
 - Wrong: search code used `items` and `query` inconsistently
   (UnboundLocalError); templates were missing (TemplateNotFound).
 - Did: fixed both, tests caught the first. Commit: <link>
+### Entry 7: Register route used db without importing it
+- Problem: the register code I was given used `db` but auth.py never imported it.
+  The new register test failed with NameError.
+- Fix: added `from .extensions import db`. All 23 tests pass.

@@ -1,24 +1,32 @@
 # THREATS.md
 
-| # | Threat | What I did | Status |
-|---|--------|------------|--------|
-| 1 | Guessing document ids (/documents/2) | Every route calls get_doc -> can(); strangers get 403 and a log entry | Closed, tested |
-| 2 | Hiding buttons only | Server checks every request, not just the page | Closed, tested |
-| 3 | Revoked user keeps access | No cached permissions or links; the grant row is deleted and checked each request | Closed, tested |
-| 4 | Direct file URL | Files are stored outside static/ under random names, served only by the download route | Closed |
-| 5 | Uploading bad files | Extension allow-list, 4 MB limit, empty files refused, safe file names | Partly closed |
-| 6 | Search leaking documents | Search starts from documents the user may see | Closed, tested |
-| 7 | Editing the audit log | App never updates/deletes; DB triggers block it | Partly closed |
-| 8 | Fake logins / role changes | Role read from the database each request; passwords hashed | Closed |
-| 9 | CSRF | CSRF tokens on every form | Closed |
-| 10 | Admin reading files | Admin can delete but cannot read contents | Closed, tested |
+## Problems I thought of and what I did
+1. Guessing a document number in the URL: every document route calls get_doc(),
+   which calls can(). Strangers get 403 and the attempt is logged. (tested)
+2. Only hiding buttons: the server checks every request. (tested)
+3. A removed user keeps access: the grant is deleted and checked on every
+   request, so access ends at once. (tested)
+4. Opening the file directly: files are saved under random names outside the
+   static folder and only sent by the download route.
+5. Bad uploads: only pdf, txt, png, jpg, jpeg, docx; max 4 MB; empty files
+   refused; file names cleaned. (tested)
+6. Search showing other people's documents: search only looks inside documents
+   the user is allowed to see. (tested)
+7. Changing the audit log: the app never edits or deletes it, and database
+   triggers block it.
+8. Pretending to be admin: the role is read from the database on every request.
+   Passwords are hashed.
+9. Fake form submissions (CSRF): every form has a CSRF token.
+10. Admin reading files: the admin can delete a document but cannot read it. (tested)
 
-## Accepted risks (known, not fixed)
-- File content is not checked, only the extension (a renamed .exe as .pdf passes).
-- Someone with direct database access could drop the triggers and edit the log.
-- No rate limit on login attempts.
-- Guessable numeric document ids (access is still checked every time).
-- Refused access returns 403, so outsiders can tell a document exists.
-- Deleting a document is permanent; there is no recovery or version history.
-- No sharing with people outside the company; no AI suggestion feature.
-- Uploaded files are not encrypted on disk.
+## Known weak points (not fixed)
+- Files are checked by extension only, not by content.
+- Someone with direct access to the database file could remove the triggers.
+- No limit on login attempts.
+- Document ids are simple numbers (access is still checked every time).
+- A refused request returns 403, so a user can tell a document exists.
+- Deleting a document is permanent. No versions or recovery.
+- No sharing with people outside the system. No AI suggestion feature.
+- Files are not encrypted on disk.
+- On the free host, uploaded files and the database can disappear when the
+  server restarts.
