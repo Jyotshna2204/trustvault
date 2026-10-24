@@ -29,13 +29,13 @@ One function, can(), decides every request. If there is no grant, the answer is 
     python -m pytest -q
 
 ## Live site and demo accounts
-Live link: (add after deploying)
+Live link:https://trustvault-ktd2.onrender.com
 - admin@trustvault.test / (password)
 - owner1@trustvault.test / (password)
 - viewer@trustvault.test / (password)
 
 ## How I used AI
-I used Claude for planning and writing code in small steps. See PROMPTS.md for
+Claude for planning and writing code in small steps. See PROMPTS.md for
 the mistakes I found and fixed.
 
 ## Not built / unfinished
