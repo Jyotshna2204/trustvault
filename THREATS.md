@@ -30,3 +30,7 @@
 - Files are not encrypted on disk.
 - On the free host, uploaded files and the database can disappear when the
   server restarts.
+  - The register page lets anyone create a viewer account (no email check).
+- No limit on how many failed logins or junk audit entries someone can create.
+- Search by title uses the text typed by the user in a database query
+  (it is parameterised, so it is not SQL injection, but I did not test odd input).
